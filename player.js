@@ -1,9 +1,9 @@
 const tracks = [
   {
     id: 1,
-    title: "아이유 - 좋은날",
-    artist: "minjeong-park",
-    album: "좋은날 앨범",
+    title: "Kairikibear - Darling Dance",
+    artist: "Kairikibear",
+    album: "Darling Dance 앨범",
     audioSrc: "assets/달링 댄스.mp3",
     albumCover: "assets/albumart.jpg"
   },
@@ -32,9 +32,6 @@ const albumCoverEl = document.getElementById("album-cover");
 const tracklistContainer = document.getElementById("tracklist");
 
 let audioContext;
-let analyser;
-let dataArray;
-let bufferLength;
 let animationId;
 let waveformData = null;
 
@@ -45,7 +42,7 @@ function resizeCanvas() {
   ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 }
 resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+window.addEventListener("resize", resizeCanvas);
 
 async function calculateWaveformData(audioURL, samples = 1200) {
   try {
@@ -57,7 +54,7 @@ async function calculateWaveformData(audioURL, samples = 1200) {
     const blockSize = Math.floor(rawData.length / samples);
     const filteredData = [];
     for (let i = 0; i < samples; i++) {
-      let blockStart = i * blockSize;
+      const blockStart = i * blockSize;
       let sum = 0;
       for (let j = 0; j < blockSize; j++) {
         sum += Math.abs(rawData[blockStart + j]);
@@ -66,8 +63,8 @@ async function calculateWaveformData(audioURL, samples = 1200) {
     }
     audioCtx.close();
     return filteredData;
-  } catch (e) {
-    console.error("파형 계산 중 오류:", e);
+  } catch (error) {
+    console.error("파형 계산 중 오류:", error);
     return null;
   }
 }
@@ -77,7 +74,7 @@ function drawBaseWaveform(data) {
   const height = canvas.height / window.devicePixelRatio;
   ctx.clearRect(0, 0, width, height);
   const barWidth = width / data.length;
-  ctx.fillStyle = '#cccccc';
+  ctx.fillStyle = "#cccccc";
   data.forEach((value, i) => {
     const barHeight = value * height * 0.9;
     const x = i * barWidth;
@@ -90,7 +87,7 @@ function drawProgressWaveform(data, progress) {
   const width = canvas.width / window.devicePixelRatio;
   const height = canvas.height / window.devicePixelRatio;
   const progressIndex = Math.floor(data.length * progress);
-  ctx.fillStyle = '#ff5500';
+  ctx.fillStyle = "#ff5500";
   const barWidth = width / data.length;
   for (let i = 0; i < progressIndex; i++) {
     const barHeight = data[i] * height * 0.9;
@@ -101,51 +98,47 @@ function drawProgressWaveform(data, progress) {
 }
 
 function setPlayButtonPlaying(isPlaying) {
-  playPauseBtn.textContent = isPlaying ? '⏸' : '▶';
+  playPauseBtn.textContent = isPlaying ? "⏸" : "▶";
 }
 
 function formatTime(seconds) {
-  if (isNaN(seconds)) return '--:--';
+  if (isNaN(seconds)) return "--:--";
   const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+  const s = Math.floor(seconds % 60)
+    .toString()
+    .padStart(2, "0");
   return `${m}:${s}`;
 }
 
 async function setTrack(index) {
-  if(audioContext) {
+  if (audioContext) {
     audioContext.close();
     audioContext = null;
     cancelAnimationFrame(animationId);
   }
   currentTrackIndex = index;
   const track = tracks[index];
-
   artistNameEl.textContent = track.artist;
   trackTitleEl.textContent = track.title;
   albumCoverEl.src = track.albumCover;
-  currentTimeSpan.textContent = '0:00';
-  durationTimeSpan.textContent = '--:--';
+  currentTimeSpan.textContent = "0:00";
+  durationTimeSpan.textContent = "--:--";
   setPlayButtonPlaying(false);
-
   audio.src = track.audioSrc;
   audio.load();
-
   waveformData = await calculateWaveformData(track.audioSrc);
-  if (waveformData) {
-    drawBaseWaveform(waveformData);
-  }
-
+  if (waveformData) drawBaseWaveform(waveformData);
   buildTracklist();
   highlightActiveTrack();
 }
 
 function buildTracklist() {
-  tracklistContainer.innerHTML = '';
+  tracklistContainer.innerHTML = "";
   tracks.forEach((track, idx) => {
-    const div = document.createElement('div');
-    div.classList.add('track-item');
-    if (idx === currentTrackIndex) div.classList.add('active');
-    div.setAttribute('data-index', idx);
+    const div = document.createElement("div");
+    div.classList.add("track-item");
+    if (idx === currentTrackIndex) div.classList.add("active");
+    div.setAttribute("data-index", idx);
     div.innerHTML = `
       <img src="${track.albumCover}" alt="앨범 커버" />
       <div class="track-details">
@@ -176,16 +169,16 @@ function buildTracklist() {
 }
 
 function highlightActiveTrack() {
-  document.querySelectorAll('.track-item').forEach((el, idx) => {
-    el.classList.toggle('active', idx === currentTrackIndex);
+  document.querySelectorAll(".track-item").forEach((el, idx) => {
+    el.classList.toggle("active", idx === currentTrackIndex);
   });
 }
 
 playPauseBtn.onclick = async () => {
-  if(audioContext && audioContext.state === 'suspended') {
+  if (audioContext && audioContext.state === "suspended") {
     await audioContext.resume();
   }
-  if(audio.paused) {
+  if (audio.paused) {
     audio.play();
     setPlayButtonPlaying(true);
   } else {
@@ -194,7 +187,7 @@ playPauseBtn.onclick = async () => {
   }
 };
 
-audio.addEventListener('timeupdate', () => {
+audio.addEventListener("timeupdate", () => {
   currentTimeSpan.textContent = formatTime(audio.currentTime);
   if (waveformData) {
     const progress = audio.currentTime / audio.duration;
@@ -203,19 +196,17 @@ audio.addEventListener('timeupdate', () => {
   }
 });
 
-audio.addEventListener('loadedmetadata', () => {
+audio.addEventListener("loadedmetadata", () => {
   durationTimeSpan.textContent = formatTime(audio.duration);
 });
 
-audio.addEventListener('ended', () => {
+audio.addEventListener("ended", () => {
   setPlayButtonPlaying(false);
 });
 
-window.addEventListener('resize', () => {
+window.addEventListener("resize", () => {
   resizeCanvas();
-  if (waveformData) {
-    drawBaseWaveform(waveformData);
-  }
+  if (waveformData) drawBaseWaveform(waveformData);
 });
 
 resizeCanvas();
