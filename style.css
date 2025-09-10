@@ -3,7 +3,8 @@
 }
 
 body, html {
-  margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0; padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #fafafa; color: #333;
 }
 
@@ -52,9 +53,7 @@ body, html {
   height: 180px;
 }
 
-.player-info {
-  max-width: 600px;
-}
+.player-info { max-width: 600px; }
 
 .user-name {
   background: rgba(0,0,0,0.5); display: inline-block;
@@ -71,29 +70,47 @@ body, html {
 .waveform-container {
   position: relative;
   width: 800px;
-  margin-top: -80px;       /* 기존값 유지 */
+  margin-top: -80px;
   display: flex;
   align-items: center;
-  gap: 5px;               /* 보라 영역 좌우 간격 */
-  padding-right: 10px;     /* 오른쪽 보라 영역 크기 고정 */
-  padding-left: 0px;      /* 왼쪽 보라 영역 고정 */
+  gap: 5px;
+  padding-right: 10px;
+  padding-left: 0;
 }
 
 #play-pause-btn {
-  margin-top: 110px;
   width: 48px;
   height: 48px;
+  margin-top: 90px;
   border-radius: 50%;
   border: none;
   background-color: #ff5500;
   color: white;
   font-size: 25px;
+  font-weight: 700;
   cursor: pointer;
   flex-shrink: 0;
   user-select: none;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  padding: 0;
+}
+
+#play-pause-btn .icon {
+  display: none;
+  position: relative;
+}
+
+#play-pause-btn .icon.play {
+  display: inline;
+}
+
+#play-pause-btn .icon.pause {
+  display: inline;
+  top: -4px;  /* 정지 아이콘 부분만 위쪽으로 4px 이동 */
+  position: relative;
 }
 
 #waveform {
@@ -107,7 +124,7 @@ body, html {
 }
 
 #time-display {
-  margin-left: 0px;
+  margin-left: 0;
   min-width: 80px;
   font-size: 14px;
   user-select: none;

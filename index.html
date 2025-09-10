@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>SoundClone 완전 통합 예제</title>
+  <title>SoundClone - 플레이/정지 아이콘 위치 조정</title>
   <link rel="stylesheet" href="style.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
@@ -29,15 +29,17 @@
   </header>
 
   <main class="main-content">
-
     <section class="player-section">
       <div class="player-info">
         <div id="current-track-info">
-          <div class="user-name" id="artist-name">minjeong-park</div>
-          <div class="track-title" id="track-title">아이유 - 좋은날</div>
+          <div class="user-name" id="artist-name">Kairikibear</div>
+          <div class="track-title" id="track-title">Kairikibear - Darling Dance</div>
         </div>
         <div class="waveform-container">
-          <button id="play-pause-btn" aria-label="Play/Pause">▶</button>
+          <button id="play-pause-btn" aria-label="Play/Pause">
+            <span class="icon play">▶</span>
+            <span class="icon pause">||</span>
+          </button>
           <canvas id="waveform"></canvas>
           <div id="time-display">
             <span id="current-time">0:00</span> / <span id="duration-time">0:00</span>
@@ -53,7 +55,6 @@
       <h2>곡 목록</h2>
       <div id="tracklist"></div>
     </section>
-
   </main>
 
   <script src="player.js"></script>

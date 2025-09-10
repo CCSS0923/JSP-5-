@@ -98,7 +98,13 @@ function drawProgressWaveform(data, progress) {
 }
 
 function setPlayButtonPlaying(isPlaying) {
-  playPauseBtn.textContent = isPlaying ? "⏸" : "▶";
+  if (isPlaying) {
+    playPauseBtn.querySelector(".icon.play").style.display = "none";
+    playPauseBtn.querySelector(".icon.pause").style.display = "inline";
+  } else {
+    playPauseBtn.querySelector(".icon.play").style.display = "inline";
+    playPauseBtn.querySelector(".icon.pause").style.display = "none";
+  }
 }
 
 function formatTime(seconds) {
