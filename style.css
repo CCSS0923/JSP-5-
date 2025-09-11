@@ -105,10 +105,14 @@ body, html {
 
 #play-pause-btn .icon.play {
   display: inline;
+  top: -1px;
+  left: 2px;
+  position: relative;
 }
 
 #play-pause-btn .icon.pause {
   display: inline;
+  font-size: 30px;
   top: -4px;  /* 정지 아이콘 부분만 위쪽으로 4px 이동 */
   position: relative;
 }

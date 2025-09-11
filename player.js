@@ -100,12 +100,13 @@ function drawProgressWaveform(data, progress) {
 function setPlayButtonPlaying(isPlaying) {
   if (isPlaying) {
     playPauseBtn.querySelector(".icon.play").style.display = "none";
-    playPauseBtn.querySelector(".icon.pause").style.display = "inline";
+    playPauseBtn.querySelector(".icon.pause").style.display = "inline-block"; // 혹은 flex
   } else {
-    playPauseBtn.querySelector(".icon.play").style.display = "inline";
+    playPauseBtn.querySelector(".icon.play").style.display = "inline-block"; // 혹은 inline
     playPauseBtn.querySelector(".icon.pause").style.display = "none";
   }
 }
+
 
 function formatTime(seconds) {
   if (isNaN(seconds)) return "--:--";
@@ -192,6 +193,17 @@ playPauseBtn.onclick = async () => {
     setPlayButtonPlaying(false);
   }
 };
+
+// 클릭한 위치로 재생 이동
+canvas.addEventListener('click', (event) => {
+  const rect = canvas.getBoundingClientRect();
+  const clickX = event.clientX - rect.left;
+  const width = canvas.width / window.devicePixelRatio;
+  const clickRatio = clickX / width;
+  if (!isNaN(audio.duration)) {
+    audio.currentTime = audio.duration * clickRatio;
+  }
+});
 
 audio.addEventListener("timeupdate", () => {
   currentTimeSpan.textContent = formatTime(audio.currentTime);
