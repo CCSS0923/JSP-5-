@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>SoundClone - 플레이/정지 아이콘 위치 조정</title>
+  <title>SoundClone 플레이바 + 볼륨 슬라이더 완전체</title>
   <link rel="stylesheet" href="style.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
@@ -50,13 +50,23 @@
         <img id="album-cover" src="assets/albumart.jpg" alt="앨범 커버" />
       </div>
     </section>
-
     <section class="tracklist-section">
       <h2>곡 목록</h2>
       <div id="tracklist"></div>
     </section>
   </main>
 
+  <!-- 하단 SoundCloud 스타일 플레이바 -->
+  <footer class="player-bar">
+    <div class="player-bar-section">
+      <button id="footer-play-pause-btn" class="bar-btn" aria-label="Play/Pause">▶</button>
+      <span id="footer-current-time">0:00</span>
+      <input type="range" id="progress-bar" min="0" max="100" value="0">
+      <span id="footer-duration-time">0:00</span>
+      <input type="range" id="volume-slider" min="0" max="100" value="80">
+      <span class="volume-icon">🔊</span>
+    </div>
+  </footer>
   <script src="player.js"></script>
 </body>
 </html>
