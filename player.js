@@ -38,9 +38,16 @@ const volumeSlider = document.getElementById("volume-slider");
 const footerCurrentTime = document.getElementById("footer-current-time");
 const footerDurationTime = document.getElementById("footer-duration-time");
 
+const volumeIcon = document.querySelector(".volume-icon");
+
 let audioContext;
 let animationId;
 let waveformData = null;
+
+// 음소거 상태 변수
+let isMuted = false;
+// 이전 볼륨을 저장할 변수 (음소거 해제 시 복원용)
+let previousVolume = 0.8;
 
 function resizeCanvas() {
   canvas.width = canvas.clientWidth * window.devicePixelRatio;
@@ -105,7 +112,8 @@ function drawProgressWaveform(data, progress) {
 }
 
 function setPlayButtonPlaying(isPlaying) {
-  playPauseBtn.textContent = isPlaying ? "⏸" : "▶";
+  playPauseBtn.querySelector(".icon.play").style.display = isPlaying ? "none" : "inline";
+  playPauseBtn.querySelector(".icon.pause").style.display = isPlaying ? "inline" : "none";
 }
 
 function formatTime(seconds) {
@@ -192,31 +200,69 @@ playPauseBtn.onclick = async () => {
   }
 };
 
-// 하단 플레이바 제어
+// 하단 플레이바 제어 (span 아이콘 토글 방식)
 footerPlayPauseBtn.onclick = () => {
   if (audio.paused) {
     audio.play();
-    footerPlayPauseBtn.textContent = "⏸";
+    footerPlayPauseBtn.querySelector(".icon.play").style.display = "none";
+    footerPlayPauseBtn.querySelector(".icon.pause").style.display = "inline";
   } else {
     audio.pause();
-    footerPlayPauseBtn.textContent = "▶";
+    footerPlayPauseBtn.querySelector(".icon.play").style.display = "inline";
+    footerPlayPauseBtn.querySelector(".icon.pause").style.display = "none";
   }
 };
 audio.addEventListener("play", () => {
-  footerPlayPauseBtn.textContent = "⏸";
+  footerPlayPauseBtn.querySelector(".icon.play").style.display = "none";
+  footerPlayPauseBtn.querySelector(".icon.pause").style.display = "inline";
 });
 audio.addEventListener("pause", () => {
-  footerPlayPauseBtn.textContent = "▶";
+  footerPlayPauseBtn.querySelector(".icon.play").style.display = "inline";
+  footerPlayPauseBtn.querySelector(".icon.pause").style.display = "none";
 });
 
 // 볼륨 슬라이더 제어
 volumeSlider.addEventListener("input", (e) => {
   audio.volume = volumeSlider.value / 100;
+  // 음소거 상태면 해제
+  if (audio.volume > 0 && isMuted) {
+    isMuted = false;
+    updateVolumeIcon();
+  }
+});
+
+// 음소거 토글 함수
+function toggleMute() {
+  if (isMuted) {
+    audio.volume = previousVolume;
+    volumeSlider.value = previousVolume * 100;
+    isMuted = false;
+  } else {
+    previousVolume = audio.volume;
+    audio.volume = 0;
+    volumeSlider.value = 0;
+    isMuted = true;
+  }
+  updateVolumeIcon();
+}
+
+// 아이콘 상태 업데이트
+function updateVolumeIcon() {
+  if (isMuted || audio.volume === 0) {
+    volumeIcon.textContent = "🔇"; // 음소거 아이콘
+  } else {
+    volumeIcon.textContent = "🔊"; // 볼륨 아이콘
+  }
+}
+
+// volumeIcon 클릭 이벤트 바인딩
+volumeIcon.addEventListener("click", () => {
+  toggleMute();
 });
 
 // 하단 진행바 최신화
 audio.addEventListener("timeupdate", () => {
-  const percent = audio.currentTime / audio.duration * 100;
+  const percent = (audio.currentTime / audio.duration) * 100;
   progressBar.value = isNaN(percent) ? 0 : percent;
   footerCurrentTime.textContent = formatTime(audio.currentTime);
   footerDurationTime.textContent = formatTime(audio.duration);
@@ -233,10 +279,10 @@ audio.addEventListener("timeupdate", () => {
   }
 });
 
-// 하단 진행바 클릭/드래그
+// 하단 진행바 클릭/드래그 이벤트
 progressBar.addEventListener("input", (e) => {
   if (!isNaN(audio.duration)) {
-    audio.currentTime = e.target.value / 100 * audio.duration;
+    audio.currentTime = (e.target.value / 100) * audio.duration;
   }
 });
 
@@ -247,7 +293,8 @@ audio.addEventListener("loadedmetadata", () => {
 
 audio.addEventListener("ended", () => {
   setPlayButtonPlaying(false);
-  footerPlayPauseBtn.textContent = "▶";
+  footerPlayPauseBtn.querySelector(".icon.play").style.display = "inline";
+  footerPlayPauseBtn.querySelector(".icon.pause").style.display = "none";
 });
 
 window.addEventListener("resize", () => {
@@ -255,5 +302,13 @@ window.addEventListener("resize", () => {
   if (waveformData) drawBaseWaveform(waveformData);
 });
 
+// 초기화 세팅
 resizeCanvas();
 setTrack(currentTrackIndex);
+
+// 하단 플레이바 아이콘 표시 초기화
+footerPlayPauseBtn.querySelector(".icon.play").style.display = "inline";
+footerPlayPauseBtn.querySelector(".icon.pause").style.display = "none";
+
+// 볼륨 아이콘 상태 초기화
+updateVolumeIcon();

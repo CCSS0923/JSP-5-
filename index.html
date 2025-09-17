@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <title>SoundClone 플레이바 + 볼륨 슬라이더 완전체</title>
   <link rel="stylesheet" href="style.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
+
 <body>
   <header class="navbar">
     <div class="logo">🎵 SoundClone</div>
@@ -59,7 +61,10 @@
   <!-- 하단 SoundCloud 스타일 플레이바 -->
   <footer class="player-bar">
     <div class="player-bar-section">
-      <button id="footer-play-pause-btn" class="bar-btn" aria-label="Play/Pause">▶</button>
+      <button id="footer-play-pause-btn" class="bar-btn" aria-label="Play/Pause">
+        <span class="icon play">▶</span>
+        <span class="icon pause">⏸</span>
+      </button>
       <span id="footer-current-time">0:00</span>
       <input type="range" id="progress-bar" min="0" max="100" value="0">
       <span id="footer-duration-time">0:00</span>
@@ -69,4 +74,5 @@
   </footer>
   <script src="player.js"></script>
 </body>
+
 </html>
