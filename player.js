@@ -31,7 +31,6 @@ const trackTitleEl = document.getElementById("track-title");
 const albumCoverEl = document.getElementById("album-cover");
 const tracklistContainer = document.getElementById("tracklist");
 
-// 하단 플레이바 관련
 const footerPlayPauseBtn = document.getElementById("footer-play-pause-btn");
 const progressBar = document.getElementById("progress-bar");
 const volumeSlider = document.getElementById("volume-slider");
@@ -44,10 +43,12 @@ let audioContext;
 let animationId;
 let waveformData = null;
 
-// 음소거 상태 변수
 let isMuted = false;
-// 이전 볼륨을 저장할 변수 (음소거 해제 시 복원용)
-let previousVolume = 0.8;
+let previousVolume = 0.15; // 초기 볼륨 15%
+audio.volume = previousVolume;
+volumeSlider.value = previousVolume * 100;
+
+let isSeeking = false;
 
 function resizeCanvas() {
   canvas.width = canvas.clientWidth * window.devicePixelRatio;
@@ -56,7 +57,18 @@ function resizeCanvas() {
   ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 }
 resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener("resize", () => {
+  resizeCanvas();
+  if (waveformData) drawBaseWaveform(waveformData);
+});
+
+canvas.addEventListener("click", (event) => {
+  if (!audio.duration) return;
+  const rect = canvas.getBoundingClientRect();
+  const clickX = event.clientX - rect.left;
+  const clickRatio = clickX / rect.width;
+  audio.currentTime = clickRatio * audio.duration;
+});
 
 async function calculateWaveformData(audioURL, samples = 1200) {
   try {
@@ -200,7 +212,6 @@ playPauseBtn.onclick = async () => {
   }
 };
 
-// 하단 플레이바 제어 (span 아이콘 토글 방식)
 footerPlayPauseBtn.onclick = () => {
   if (audio.paused) {
     audio.play();
@@ -212,26 +223,25 @@ footerPlayPauseBtn.onclick = () => {
     footerPlayPauseBtn.querySelector(".icon.pause").style.display = "none";
   }
 };
+
 audio.addEventListener("play", () => {
   footerPlayPauseBtn.querySelector(".icon.play").style.display = "none";
   footerPlayPauseBtn.querySelector(".icon.pause").style.display = "inline";
 });
+
 audio.addEventListener("pause", () => {
   footerPlayPauseBtn.querySelector(".icon.play").style.display = "inline";
   footerPlayPauseBtn.querySelector(".icon.pause").style.display = "none";
 });
 
-// 볼륨 슬라이더 제어
 volumeSlider.addEventListener("input", (e) => {
   audio.volume = volumeSlider.value / 100;
-  // 음소거 상태면 해제
   if (audio.volume > 0 && isMuted) {
     isMuted = false;
     updateVolumeIcon();
   }
 });
 
-// 음소거 토글 함수
 function toggleMute() {
   if (isMuted) {
     audio.volume = previousVolume;
@@ -246,32 +256,41 @@ function toggleMute() {
   updateVolumeIcon();
 }
 
-// 아이콘 상태 업데이트
 function updateVolumeIcon() {
   if (isMuted || audio.volume === 0) {
-    volumeIcon.textContent = "🔇"; // 음소거 아이콘
+    volumeIcon.textContent = "🔇";
   } else {
-    volumeIcon.textContent = "🔊"; // 볼륨 아이콘
+    volumeIcon.textContent = "🔊";
   }
 }
 
-// volumeIcon 클릭 이벤트 바인딩
 volumeIcon.addEventListener("click", () => {
   toggleMute();
 });
 
-// 하단 진행바 최신화
+progressBar.addEventListener("input", (e) => {
+  isSeeking = true;
+  const displayTime = (e.target.value / 100) * audio.duration;
+  footerCurrentTime.textContent = formatTime(displayTime);
+});
+
+progressBar.addEventListener("change", (e) => {
+  isSeeking = false;
+  if (!isNaN(audio.duration)) {
+    audio.currentTime = (e.target.value / 100) * audio.duration;
+  }
+});
+
 audio.addEventListener("timeupdate", () => {
+  if (isSeeking) return;
   const percent = (audio.currentTime / audio.duration) * 100;
   progressBar.value = isNaN(percent) ? 0 : percent;
   footerCurrentTime.textContent = formatTime(audio.currentTime);
   footerDurationTime.textContent = formatTime(audio.duration);
 
-  // 상단 시간 표시도 동기화
   currentTimeSpan.textContent = formatTime(audio.currentTime);
   durationTimeSpan.textContent = formatTime(audio.duration);
 
-  // 상단 파형 동기화
   if (waveformData) {
     const progress = audio.currentTime / audio.duration;
     drawBaseWaveform(waveformData);
@@ -279,8 +298,7 @@ audio.addEventListener("timeupdate", () => {
   }
 });
 
-// 하단 진행바 클릭/드래그 이벤트
-progressBar.addEventListener("input", (e) => {
+progressBar.addEventListener("change", (e) => {
   if (!isNaN(audio.duration)) {
     audio.currentTime = (e.target.value / 100) * audio.duration;
   }
@@ -302,13 +320,10 @@ window.addEventListener("resize", () => {
   if (waveformData) drawBaseWaveform(waveformData);
 });
 
-// 초기화 세팅
 resizeCanvas();
 setTrack(currentTrackIndex);
 
-// 하단 플레이바 아이콘 표시 초기화
 footerPlayPauseBtn.querySelector(".icon.play").style.display = "inline";
 footerPlayPauseBtn.querySelector(".icon.pause").style.display = "none";
 
-// 볼륨 아이콘 상태 초기화
 updateVolumeIcon();
