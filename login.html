@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>로그인/회원가입</title>
+  <style>
+    body {
+      background: #181818;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    .auth-container {
+      max-width: 400px;
+      margin: 60px auto;
+      background: #232323;
+      padding: 38px;
+      border-radius: 8px;
+      box-shadow: 0 3px 18px rgba(0,0,0,0.3);
+    }
+    h2 {
+      font-size: 1.9rem;
+      font-weight: bold;
+      margin-bottom: 22px;
+    }
+    .social-btn {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: none;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .fb { background: #1877F2; }
+    .google { background: #444; }
+    .apple { background: #000; }
+    .email-label {
+      margin: 18px 0 8px 0;
+      font-size: 15px;
+      color: #d3d3d3;
+      font-weight: bold;
+    }
+    .email-input {
+      width: 100%;
+      padding: 11px;
+      border-radius: 6px;
+      border: none;
+      background: #333;
+      color: #fff;
+      font-size: 15px;
+      margin-bottom: 14px;
+    }
+    .continue-btn {
+      width: 100%;
+      padding: 13px;
+      background: #b3b3b3;
+      border-radius: 6px;
+      border: none;
+      color: #272727;
+      font-size: 17px;
+      font-weight: bold;
+      margin-bottom: 2px;
+      cursor: pointer;
+    }
+    .help-link {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #3b67d1;
+      display: block;
+      text-decoration: underline;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <h2>Sign in or create an account</h2>
+    <button class="social-btn fb">Continue with Facebook</button>
+    <button class="social-btn google">Continue with Google</button>
+    <button class="social-btn apple">Continue with Apple</button>
+    <div class="email-label">Or with email</div>
+    <input class="email-input" type="email" placeholder="Your email address" />
+    <button class="continue-btn">Continue</button>
+    <a href="#" class="help-link">Need help?</a>
+  </div>
+</body>
+</html>
