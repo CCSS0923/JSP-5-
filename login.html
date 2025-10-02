@@ -33,9 +33,7 @@
       cursor: pointer;
       font-size: 16px;
     }
-    .fb { background: #1877F2; }
     .google { background: #444; }
-    .apple { background: #000; }
     .email-label {
       margin: 18px 0 8px 0;
       font-size: 15px;
@@ -77,13 +75,41 @@
 <body>
   <div class="auth-container">
     <h2>Sign in or create an account</h2>
-    <button class="social-btn fb">Continue with Facebook</button>
     <button class="social-btn google">Continue with Google</button>
-    <button class="social-btn apple">Continue with Apple</button>
     <div class="email-label">Or with email</div>
-    <input class="email-input" type="email" placeholder="Your email address" />
-    <button class="continue-btn">Continue</button>
+    <input class="email-input" id="login-email" type="email" placeholder="Your email address" />
+    <input class="email-input" id="login-password" type="password" placeholder="Your password" />
+    <button class="continue-btn" id="login-btn">Continue</button>
+    <div id="login-error" style="color: #e66; margin-top: 8px;"></div>
     <a href="#" class="help-link">Need help?</a>
   </div>
+  <script>
+    document.getElementById('login-btn').onclick = async function () {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const errorBox = document.getElementById('login-error');
+      errorBox.textContent = "";
+      if (!email || !password) {
+        errorBox.textContent = "이메일과 비밀번호를 입력하세요.";
+        return;
+      }
+      // 실제 서버에 로그인 요청
+      try {
+        const response = await fetch('http://localhost:8000/api/login', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({email, password})
+        });
+        const result = await response.json();
+        if (result.success) {
+          location.href = "home.html"; // 로그인 성공 시 이동
+        } else {
+          errorBox.textContent = result.message || "로그인에 실패했습니다.";
+        }
+      } catch (e) {
+        errorBox.textContent = "서버 오류가 발생했습니다.";
+      }
+    };
+  </script>
 </body>
 </html>
