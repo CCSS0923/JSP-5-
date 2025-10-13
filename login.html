@@ -4,71 +4,33 @@
   <meta charset="UTF-8" />
   <title>로그인/회원가입</title>
   <style>
-    body {
-      background: #181818;
-      color: #fff;
-      font-family: Arial, sans-serif;
-    }
+    body { background: #181818; color: #fff; font-family: Arial, sans-serif; }
     .auth-container {
-      max-width: 400px;
-      margin: 60px auto;
-      background: #232323;
-      padding: 38px;
-      border-radius: 8px;
-      box-shadow: 0 3px 18px rgba(0,0,0,0.3);
+      max-width: 400px; margin: 60px auto; background: #232323;
+      padding: 38px; border-radius: 8px; box-shadow: 0 3px 18px rgba(0,0,0,0.3);
     }
-    h2 {
-      font-size: 1.9rem;
-      font-weight: bold;
-      margin-bottom: 22px;
-    }
+    h2 { font-size: 1.9rem; font-weight: bold; margin-bottom: 22px; }
     .social-btn {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 12px;
-      border-radius: 6px;
-      border: none;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 16px;
+      width: 100%; padding: 12px; margin-bottom: 12px;
+      border-radius: 6px; border: none; color: #fff;
+      font-weight: bold; cursor: pointer; font-size: 16px;
     }
     .google { background: #444; }
-    .email-label {
-      margin: 18px 0 8px 0;
-      font-size: 15px;
-      color: #d3d3d3;
-      font-weight: bold;
-    }
+    .email-label { margin: 18px 0 8px 0; font-size: 15px; color: #d3d3d3; font-weight: bold; }
     .email-input {
-      width: 100%;
-      padding: 11px;
-      border-radius: 6px;
-      border: none;
-      background: #333;
-      color: #fff;
-      font-size: 15px;
-      margin-bottom: 14px;
+      width: 100%; padding: 11px; border-radius: 6px;
+      border: none; background: #333; color: #fff;
+      font-size: 15px; margin-bottom: 14px;
     }
     .continue-btn {
-      width: 100%;
-      padding: 13px;
-      background: #b3b3b3;
-      border-radius: 6px;
-      border: none;
-      color: #272727;
-      font-size: 17px;
-      font-weight: bold;
-      margin-bottom: 2px;
-      cursor: pointer;
+      width: 100%; padding: 13px;
+      background: #b3b3b3; border-radius: 6px; border: none;
+      color: #272727; font-size: 17px; font-weight: bold;
+      margin-bottom: 2px; cursor: pointer;
     }
     .help-link {
-      margin-top: 14px;
-      font-size: 13px;
-      color: #3b67d1;
-      display: block;
-      text-decoration: underline;
-      text-align: left;
+      margin-top: 14px; font-size: 13px; color: #3b67d1;
+      display: block; text-decoration: underline; text-align: left;
     }
   </style>
 </head>
@@ -76,15 +38,18 @@
   <div class="auth-container">
     <h2>Sign in or create an account</h2>
     <button class="social-btn google">Continue with Google</button>
-    <div class="email-label">Or with email</div>
-    <input class="email-input" id="login-email" type="email" placeholder="Your email address" />
-    <input class="email-input" id="login-password" type="password" placeholder="Your password" />
-    <button class="continue-btn" id="login-btn">Continue</button>
+    <form id="loginForm" autocomplete="off">
+      <div class="email-label">Or with email</div>
+      <input class="email-input" id="login-email" type="email" placeholder="Your email address" required />
+      <input class="email-input" id="login-password" type="password" placeholder="Your password" required />
+      <button class="continue-btn" id="login-btn" type="submit">Continue</button>
+    </form>
     <div id="login-error" style="color: #e66; margin-top: 8px;"></div>
     <a href="#" class="help-link">Need help?</a>
   </div>
   <script>
-    document.getElementById('login-btn').onclick = async function () {
+    document.getElementById('loginForm').onsubmit = async function(e) {
+      e.preventDefault();
       const email = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-password').value;
       const errorBox = document.getElementById('login-error');
@@ -93,7 +58,6 @@
         errorBox.textContent = "이메일과 비밀번호를 입력하세요.";
         return;
       }
-      // 실제 서버에 로그인 요청
       try {
         const response = await fetch('http://localhost:8000/api/login', {
           method: 'POST',
@@ -102,7 +66,12 @@
         });
         const result = await response.json();
         if (result.success) {
-          location.href = "home.html"; // 로그인 성공 시 이동
+          // 프로필 정보와 임의 이미지를 localStorage에 저장
+          localStorage.setItem('profile', JSON.stringify({
+            name: result.name || email,
+            img: 'image.jpg' // 'image.jpg'는 프로젝트 폴더의 임의 이미지, 서버에서 받은 경로도 사용 가능
+          }));
+          window.location.href = "home.html";
         } else {
           errorBox.textContent = result.message || "로그인에 실패했습니다.";
         }
